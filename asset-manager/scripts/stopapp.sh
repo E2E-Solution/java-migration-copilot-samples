@@ -27,7 +27,7 @@ else
 fi
 
 echo "Stopping and removing Docker containers..."
-docker stop assets-postgres assets-rabbitmq 2>/dev/null
-docker rm assets-postgres assets-rabbitmq 2>/dev/null
+docker stop asset-mgr-postgres asset-mgr-rabbitmq 2>/dev/null
+docker rm asset-mgr-postgres asset-mgr-rabbitmq 2>/dev/null
 
 echo "All services stopped!"
