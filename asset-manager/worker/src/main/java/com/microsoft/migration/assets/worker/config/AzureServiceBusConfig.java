@@ -1,4 +1,4 @@
-package com.microsoft.migration.assets.config;
+package com.microsoft.migration.assets.worker.config;
 
 import com.azure.core.credential.TokenCredential;
 import com.azure.core.exception.ResourceExistsException;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitConfig {
+public class AzureServiceBusConfig {
     public static final String IMAGE_PROCESSING_QUEUE = "image-processing";
 
     @Bean

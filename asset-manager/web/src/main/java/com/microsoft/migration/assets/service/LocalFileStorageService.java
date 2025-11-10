@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.microsoft.migration.assets.config.RabbitConfig.IMAGE_PROCESSING_QUEUE;
+import static com.microsoft.migration.assets.config.AzureServiceBusConfig.IMAGE_PROCESSING_QUEUE;
 
 @Service
 @Profile("dev") // Only active when dev profile is active

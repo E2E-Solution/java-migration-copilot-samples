@@ -2,11 +2,11 @@
 setlocal enabledelayedexpansion
 
 rem Azure Deployment Script for Assets Manager
-rem Execute with: .\scripts\deploy-to-azure.cmd -ResourceGroupName "my-rg" -Location "eastus" -Prefix "myapp"
+rem Execute with: .\scripts\deploy-to-azure.cmd -ResourceGroupName "my-rg" -Location "southeastasia" -Prefix "myapp"
 
 rem Default parameters
-set ResourceGroupName=assets-manager-rg
-set Location=eastus2
+set ResourceGroupName=rg-asset-manager-06
+set Location=southeastasia
 set Prefix=assetsapp
 
 rem Parse command line arguments

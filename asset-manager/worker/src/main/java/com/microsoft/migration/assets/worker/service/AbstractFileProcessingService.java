@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.microsoft.migration.assets.worker.config.RabbitConfig.IMAGE_PROCESSING_QUEUE;
+import static com.microsoft.migration.assets.worker.config.AzureServiceBusConfig.IMAGE_PROCESSING_QUEUE;
 
 @Slf4j
 public abstract class AbstractFileProcessingService implements FileProcessor {

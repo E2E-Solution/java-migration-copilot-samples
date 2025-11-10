@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Azure Environment Variables for Local Development
+# Copy this file to local-azure-env.sh and update with your actual values
+# Usage: source local-azure-env.sh && ./run-local-azure.sh
+
+# Azure Storage Account
+export AZURE_STORAGE_ACCOUNT_NAME="azstgw5jceqy2zhba"
+export AZURE_STORAGE_BLOB_CONTAINER_NAME="images"
+
+# Azure Service Bus
+export AZURE_SERVICEBUS_NAMESPACE="azsbgw5jceqy2zhba"
+
+# Azure PostgreSQL
+# Update these with your actual PostgreSQL server details
+export AZURE_POSTGRES_SERVER="your-postgres-server-name"  # Without .postgres.database.azure.com
+export AZURE_POSTGRES_DB="assets_manager"
+export AZURE_POSTGRES_USER="your-admin-username"
+export AZURE_POSTGRES_PASSWORD="your-secure-password"
+
+echo "✅ Azure environment variables set:"
+echo "   Storage: $AZURE_STORAGE_ACCOUNT_NAME"
+echo "   Service Bus: $AZURE_SERVICEBUS_NAMESPACE"
+echo "   PostgreSQL: $AZURE_POSTGRES_SERVER"
+echo ""
+echo "Run: ./run-local-azure.sh"

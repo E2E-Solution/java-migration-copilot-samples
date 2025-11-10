@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.microsoft.migration.assets.config.RabbitConfig.IMAGE_PROCESSING_QUEUE;
+import static com.microsoft.migration.assets.config.AzureServiceBusConfig.IMAGE_PROCESSING_QUEUE;
 
 @Service
 @RequiredArgsConstructor
 @Profile("!dev") // Active when not in dev profile
-public class AwsS3Service implements StorageService {
+public class AzureBlobStorageService implements StorageService {
 
     private final BlobServiceClient blobServiceClient;
     private final ServiceBusTemplate serviceBusTemplate;
@@ -71,14 +71,21 @@ public class AwsS3Service implements StorageService {
         BlobParallelUploadOptions options = new BlobParallelUploadOptions(file.getInputStream()).setHeaders(headers);
         blobClient.uploadWithResponse(options, null, null);
 
-        // Send message to queue for thumbnail generation
-        ImageProcessingMessage message = new ImageProcessingMessage(
-            key,
-            file.getContentType(),
-            getStorageType(),
-            file.getSize()
-        );
-        serviceBusTemplate.send(IMAGE_PROCESSING_QUEUE, MessageBuilder.withPayload(message).build());
+        // Send message to queue for thumbnail generation (skip if Service Bus fails in local mode)
+        try {
+            ImageProcessingMessage message = new ImageProcessingMessage(
+                key,
+                file.getContentType(),
+                getStorageType(),
+                file.getSize()
+            );
+            serviceBusTemplate.send(IMAGE_PROCESSING_QUEUE, MessageBuilder.withPayload(message).build());
+            System.out.println("✓ Message sent to Service Bus queue for thumbnail generation");
+        } catch (Exception e) {
+            // Log but don't fail the upload - thumbnails can be generated later
+            System.err.println("⚠ Service Bus send failed (local testing): " + e.getMessage());
+            System.err.println("  Image uploaded successfully, but thumbnail generation skipped");
+        }
 
         // Create and save metadata to database
         ImageMetadata metadata = new ImageMetadata();

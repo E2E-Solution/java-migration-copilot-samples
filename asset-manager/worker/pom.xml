@@ -10,7 +10,6 @@
     </parent>
 
     <properties>
-        <aws-sdk.version>2.25.13</aws-sdk.version>
         <version.spring.cloud.azure>5.20.0</version.spring.cloud.azure>
     </properties>
 

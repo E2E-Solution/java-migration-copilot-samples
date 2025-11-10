@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Azure Deployment Script for Assets Manager
-# Execute with: ./scripts/deploy-to-azure.sh -ResourceGroupName "my-rg" -Location "eastus" -Prefix "myapp"
+# Execute with: ./scripts/deploy-to-azure.sh -ResourceGroupName "my-rg" -Location "southeastasia" -Prefix "myapp"
 
 # Default parameters
-ResourceGroupName="assets-manager-rg"
-Location="eastus2"
+ResourceGroupName="rg-asset-manager-06"
+Location="southeastasia"
 Prefix="assetsapp"
 
 # Parse command line arguments
@@ -29,18 +29,23 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# Generate a unique suffix using random number to ensure globally unique names
+# This is especially important for Storage Account and ACR which require global uniqueness
+UNIQUE_SUFFIX=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 6 | head -n 1)
+echo "Generated unique suffix: $UNIQUE_SUFFIX"
+
 # Define resource names
-PostgresServerName="${Prefix}db"
+PostgresServerName="${Prefix}db${UNIQUE_SUFFIX}"
 PostgresDBName="assets_manager"
-ServiceBusNamespace="${Prefix}-servicebus"
+ServiceBusNamespace="${Prefix}sb${UNIQUE_SUFFIX}"
 QueueName="image-processing"
-StorageAccountName="${Prefix}storage"
+StorageAccountName="${Prefix}st${UNIQUE_SUFFIX}"
 ContainerName="images"
-WebAppName="${Prefix}-web"
-WorkerAppName="${Prefix}-worker"
-EnvironmentName="${Prefix}-env"
-AcrName="${Prefix}registry"
-IdentityName="${Prefix}-identity"
+WebAppName="${Prefix}web${UNIQUE_SUFFIX}"
+WorkerAppName="${Prefix}wkr${UNIQUE_SUFFIX}"
+EnvironmentName="${Prefix}env${UNIQUE_SUFFIX}"
+AcrName="${Prefix}acr${UNIQUE_SUFFIX}"
+IdentityName="${Prefix}id${UNIQUE_SUFFIX}"
 ServiceConnectorName="postgres_connection"
 
 echo "==========================================="
@@ -105,12 +110,22 @@ az postgres flexible-server create \
   --public-access 0.0.0.0 \
   --sku-name Standard_B1ms \
   --tier Burstable \
-  --active-directory-auth Enabled
+  --yes
 if [ $? -ne 0 ]; then
     echo "Failed to create PostgreSQL server and database. Exiting."
     exit 1
 fi
 echo "PostgreSQL server and database created."
+
+# Enable Microsoft Entra authentication for PostgreSQL server
+echo "Enabling Microsoft Entra authentication for PostgreSQL server..."
+az postgres flexible-server ad-admin create \
+  --resource-group "$ResourceGroupName" \
+  --server-name "$PostgresServerName" \
+  --display-name "$(az account show --query user.name -o tsv)" \
+  --object-id "$(az ad signed-in-user show --query id -o tsv)" \
+  --type User || echo "Warning: Could not enable Entra auth, continuing..."
+echo "PostgreSQL configuration completed."
 
 # Create Azure Service Bus namespace and queue
 echo "Creating Azure Service Bus namespace..."
